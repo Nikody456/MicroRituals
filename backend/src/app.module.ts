@@ -22,12 +22,10 @@ import { FeedModule } from './feed/feed.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       logging: true,
-      ssl: {
-        rejectUnauthorized: false
-      },
+      ssl: true,
       extra: {
-        options: {
-          family: 4
+        ssl: {
+          rejectUnauthorized: false
         }
       }
     }),
