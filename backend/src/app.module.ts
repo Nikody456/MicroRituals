@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { RitualsModule } from './rituals/rituals.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { FeedModule } from './feed/feed.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -35,5 +37,7 @@ import { FeedModule } from './feed/feed.module';
     ChallengesModule,
     FeedModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {} 

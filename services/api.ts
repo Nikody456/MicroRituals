@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'https://microrituals-backend.onrender.com/api';
+const API_URL = 'https://microrituals-backend.onrender.com';
 
 interface LoginData {
   email: string;
@@ -16,7 +16,13 @@ interface RegisterData {
 interface CreateRitualData {
   title: string;
   description?: string;
-  frequency: string;
+  frequency: {
+    type: 'daily' | 'weekdays' | 'weekends' | 'custom';
+    days?: number[];
+    timesPerWeek?: number;
+  };
+  timeOfDay?: string;
+  isPrivate?: boolean;
 }
 
 class ApiClient {
@@ -28,8 +34,9 @@ class ApiClient {
 
   private async loadToken() {
     try {
-      this.token = await AsyncStorage.getItem('auth_token');
-      console.log('Loaded token:', this.token);
+      const token = await AsyncStorage.getItem('auth_token');
+      this.token = token;
+      console.log('Loaded token:', token);
     } catch (error) {
       console.error('Error loading token:', error);
     }
@@ -39,7 +46,6 @@ class ApiClient {
     try {
       await AsyncStorage.setItem('auth_token', token);
       this.token = token;
-      console.log('Saved token:', token);
     } catch (error) {
       console.error('Error saving token:', error);
     }
@@ -59,7 +65,7 @@ class ApiClient {
       method: options.method || 'GET',
     });
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}/api${endpoint}`, {
       ...options,
       headers: {
         ...headers,
