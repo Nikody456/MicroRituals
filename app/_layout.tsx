@@ -17,6 +17,7 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -29,43 +30,44 @@ export default function RootLayout() {
   }, [loaded]);
 
   useEffect(() => {
-    checkAuth();
+    const prepare = async () => {
+      try {
+        const token = await AsyncStorage.getItem('auth_token');
+        setIsAuthenticated(!!token);
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsReady(true);
+      }
+    };
+
+    prepare();
   }, []);
 
+  // Отдельный эффект для начальной навигации
   useEffect(() => {
-    if (isAuthenticated === null) return;
+    if (!isReady || isAuthenticated === null) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inTabsGroup = segments[0] === '(tabs)';
 
     if (!isAuthenticated && !inAuthGroup) {
-      // Редирект на логин, если нет токена
       router.replace('/(auth)/login');
     } else if (isAuthenticated && inAuthGroup) {
-      // Редирект на главную, если есть токен
       router.replace('/(tabs)');
     }
-  }, [isAuthenticated, segments]);
+  }, []); // Пустой массив зависимостей
 
-  const checkAuth = async () => {
-    try {
-      const token = await AsyncStorage.getItem('auth_token');
-      setIsAuthenticated(!!token);
-    } catch (error) {
-      console.error('Error checking auth:', error);
-      setIsAuthenticated(false);
-    }
-  };
-
-  if (!loaded || isAuthenticated === null) {
+  if (!loaded || !isReady || isAuthenticated === null) {
     return null;
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
