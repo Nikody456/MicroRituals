@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'https://microrituals-backend.onrender.com';
+const API_URL = 'https://microrituals-backend.onrender.com/api';
 
 interface LoginData {
   email: string;
@@ -124,6 +124,11 @@ class ApiClient {
 
   async getProfile() {
     return this.request('/users/profile');
+  }
+
+  async logout() {
+    await AsyncStorage.removeItem('auth_token');
+    this.token = null;
   }
 }
 
