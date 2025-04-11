@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'https://microrituals-backend.onrender.com';
+const API_URL = 'https://microritual-backend.onrender.com';
 
 interface LoginData {
   email: string;
