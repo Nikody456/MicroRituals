@@ -22,6 +22,12 @@ import { FeedModule } from './feed/feed.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       logging: true,
+      extra: {
+        ssl: true,
+        options: {
+          family: 4 // Принудительно использовать IPv4
+        }
+      }
     }),
     AuthModule,
     UsersModule,
